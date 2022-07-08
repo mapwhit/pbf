@@ -36,7 +36,7 @@
     "eslint-config-mourner": "^2.0.3",
     "protobufjs": "^6.8.8",
     "protocol-buffers": "^4.1.0",
-    "tap": "^12.6.0",
+    "tap": "~16",
     "tile-stats-runner": "^1.0.0"
   },
   "eslintConfig": {

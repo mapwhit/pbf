@@ -16,7 +16,7 @@ function toArray(buf) {
 }
 
 test('initialization', function(t) {
-    var buf = new Pbf(new Buffer([]));
+    var buf = new Pbf(Buffer.allocUnsafe(0));
     buf.destroy();
     t.end();
 });
