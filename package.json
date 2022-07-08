@@ -1,6 +1,6 @@
 {
-  "name": "pbf",
-  "version": "3.2.1",
+  "name": "@mapwhit/pbf",
+  "version": "0.0.0",
   "description": "a low-level, lightweight protocol buffers implementation in JavaScript",
   "main": "index.js",
   "unpkg": "dist/pbf.js",
@@ -21,10 +21,7 @@
   "bin": {
     "pbf": "bin/pbf"
   },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:mapbox/pbf.git"
-  },
+  "repository": "mapwhit/pbf",
   "keywords": [
     "protocol",
     "buffer",
