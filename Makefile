@@ -1,7 +1,7 @@
 check: lint test
 
 lint:
-	./node_modules/.bin/eslint index.js compile.js test/*.js bench/bench-tiles.js bin/pbf
+	./node_modules/.bin/eslint index.js test/*.js bench/bench-tiles.js
 
 test:
 	./node_modules/.bin/tap test/*.test.js

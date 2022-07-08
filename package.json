@@ -3,19 +3,12 @@
   "version": "0.0.0",
   "description": "a low-level, lightweight protocol buffers implementation in JavaScript",
   "main": "index.js",
-  "unpkg": "dist/pbf.js",
-  "jsdelivr": "dist/pbf.js",
   "scripts": {
     "test": "make check"
   },
   "files": [
-    "bin",
-    "dist",
-    "compile.js"
+    "index.js"
   ],
-  "bin": {
-    "pbf": "bin/pbf"
-  },
   "repository": "mapwhit/pbf",
   "keywords": [
     "protocol",
@@ -35,8 +28,7 @@
   },
   "homepage": "https://github.com/mapbox/pbf",
   "dependencies": {
-    "ieee754": "^1.1.12",
-    "resolve-protobuf-schema": "^2.1.0"
+    "ieee754": "^1.1.12"
   },
   "devDependencies": {
     "benchmark": "^2.1.4",
