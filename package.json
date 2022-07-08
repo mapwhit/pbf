@@ -40,14 +40,12 @@
   },
   "devDependencies": {
     "benchmark": "^2.1.4",
-    "browserify": "^16.2.3",
     "eslint": "^5.15.1",
     "eslint-config-mourner": "^2.0.3",
     "protobufjs": "^6.8.8",
     "protocol-buffers": "^4.1.0",
     "tap": "^12.6.0",
-    "tile-stats-runner": "^1.0.0",
-    "uglify-js": "^3.6.1"
+    "tile-stats-runner": "^1.0.0"
   },
   "eslintConfig": {
     "extends": "mourner",
