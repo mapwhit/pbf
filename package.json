@@ -6,12 +6,7 @@
   "unpkg": "dist/pbf.js",
   "jsdelivr": "dist/pbf.js",
   "scripts": {
-    "bench": "node bench/bench.js",
-    "test": "eslint index.js compile.js test/*.js bench/bench-tiles.js bin/pbf && tap test/*.test.js && npm run build-min",
-    "cov": "tap test/*.test.js --cov --coverage-report=html",
-    "build-min": "mkdirp dist && browserify index.js -s Pbf | uglifyjs -c -m > dist/pbf.js",
-    "build-dev": "mkdirp dist && browserify index.js -d -s Pbf > dist/pbf-dev.js",
-    "prepublishOnly": "npm run build-dev && npm run build-min"
+    "test": "make check"
   },
   "files": [
     "bin",
@@ -48,7 +43,6 @@
     "browserify": "^16.2.3",
     "eslint": "^5.15.1",
     "eslint-config-mourner": "^2.0.3",
-    "mkdirp": "^0.5.1",
     "protobufjs": "^6.8.8",
     "protocol-buffers": "^4.1.0",
     "tap": "^12.6.0",

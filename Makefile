@@ -6,5 +6,10 @@ lint:
 test:
 	./node_modules/.bin/tap test/*.test.js
 
-.PHONY: check lint test
+bench:
+	node bench/bench.js
 
+cov:
+	./node_modules/.bin/tap test/*.test.js --cov --coverage-report=html
+
+.PHONY: check lint test bench cov
