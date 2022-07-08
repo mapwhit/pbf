@@ -34,8 +34,8 @@
     "benchmark": "^2.1.4",
     "eslint": "^5.15.1",
     "eslint-config-mourner": "^2.0.3",
-    "protobufjs": "^6.8.8",
-    "protocol-buffers": "^4.1.0",
+    "protobufjs": "~6",
+    "protocol-buffers": "~5",
     "tap": "~16",
     "tile-stats-runner": "^1.0.0"
   },
