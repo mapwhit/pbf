@@ -1,4 +1,18 @@
 
+1.0.0 / 2022-07-09
+==================
+
+ * use asserts module instead of throwing Errors
+ * modernize and format the code
+ * update dependencies
+ * remove compile functionality
+ * stop publishing compiles and minimized versions
+ * move tasks to Makefile
+ * rename to @mapwhit/pbf
+ * added support for js_type at compile time (#121)
+ * add dash in utf-8 (#113)
+ * Use undefined instead of null as the default value (#112)
+
 #### 3.2.1 (Oct 11, 2019)
 
 - Significantly improved performance when decoding large strings in the browser.
