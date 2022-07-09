@@ -1,0 +1,14 @@
+env:
+  browser: true
+  commonjs: true
+  es2019: true
+  node: true
+extends: eslint:recommended
+parserOptions:
+  ecmaVersion: latest
+# rules:
+  # no-cond-assign:
+  #   - 1
+  #   -
+
+
