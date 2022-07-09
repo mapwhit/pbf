@@ -1,3 +1,4 @@
+const assert = require('assert');
 const ieee754 = require('ieee754');
 
 const SHIFT_LEFT_32 = (1 << 16) * (1 << 16);
@@ -209,7 +210,7 @@ class Pbf {
         break;
       case Pbf.Fixed64: this.pos += 8;
         break;
-      default: throw new Error(`Unimplemented type: ${type}`);
+      default: assert(false, `Unimplemented type: ${type}`);
     }
   }
 
@@ -444,7 +445,7 @@ function readVarintRemainder(l, s, p) {
   h |= (b & 0x01) << 31;
   if (b < 0x80) return toNum(l, h, s);
 
-  throw new Error('Expected varint not more than 10 bytes');
+  assert(false, 'Expected varint not more than 10 bytes');
 }
 
 function readPackedEnd(pbf) {
@@ -461,6 +462,12 @@ function toNum(low, high, isSigned) {
 }
 
 function writeBigVarint(val, pbf) {
+
+  assert(
+    val < 0x10000000000000000 && val >= -0x10000000000000000,
+    'Given varint doesn\'t fit into 10 bytes'
+  );
+
   let low;
   let high;
 
@@ -477,10 +484,6 @@ function writeBigVarint(val, pbf) {
       low = 0;
       high = (high + 1) | 0;
     }
-  }
-
-  if (val >= 0x10000000000000000 || val < -0x10000000000000000) {
-    throw new Error('Given varint doesn\'t fit into 10 bytes');
   }
 
   pbf.realloc(10);
