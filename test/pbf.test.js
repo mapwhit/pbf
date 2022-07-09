@@ -1,7 +1,10 @@
-const Pbf = require('../');
 const fs = require('fs');
 const path = require('path');
 const test = require('tap').test;
+
+global.DEBUG = true;
+
+const Pbf = require('../');
 
 function toArray(buf) {
   const arr = [];

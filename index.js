@@ -462,11 +462,13 @@ function toNum(low, high, isSigned) {
 }
 
 function writeBigVarint(val, pbf) {
-
-  assert(
-    val < 0x10000000000000000 && val >= -0x10000000000000000,
-    'Given varint doesn\'t fit into 10 bytes'
-  );
+  /* global DEBUG */
+  if (DEBUG) {
+    assert(
+      val < 0x10000000000000000 && val >= -0x10000000000000000,
+      'Given varint doesn\'t fit into 10 bytes'
+    );
+  }
 
   let low;
   let high;
