@@ -9,7 +9,10 @@
   "files": [
     "index.js"
   ],
-  "repository": "mapwhit/pbf",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mapwhit/pbf.git"
+  },
   "keywords": [
     "protocol",
     "buffer",
