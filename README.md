@@ -309,7 +309,7 @@ The resulting code is clean and simple, so feel free to customize it.
 [npm-url]: https://npmjs.org/package/@mapwhit/pbf
 
 [build-url]: https://github.com/mapwhit/pbf/actions/workflows/check.yaml
-[build-image]: https://img.shields.io/github/workflow/status/mapwhit/pbf/check
+[build-image]: https://img.shields.io/github/actions/workflow/status/mapwhit/pbf/check.yaml?branch=main
 
 [deps-image]: https://img.shields.io/librariesio/release/npm/@mapwhit/pbf
 [deps-url]: https://libraries.io/npm/@mapwhit%2Fpbf

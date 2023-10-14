@@ -9,7 +9,10 @@
   "files": [
     "index.js"
   ],
-  "repository": "mapwhit/pbf",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mapwhit/pbf.git"
+  },
   "keywords": [
     "protocol",
     "buffer",
@@ -34,9 +37,8 @@
   "devDependencies": {
     "benchmark": "^2.1.4",
     "eslint": "^8",
-    "protobufjs": "~6",
+    "protobufjs": "~7",
     "protocol-buffers": "~5",
-    "tap": "~16",
     "tile-stats-runner": "^1.0.0"
   },
   "browser": {
