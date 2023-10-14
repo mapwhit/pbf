@@ -1,4 +1,10 @@
 
+1.0.2 / 2023-10-14
+==================
+
+ * update protobuf.js
+ * replace tap with native node test runner
+
 1.0.1 / 2022-07-09
 ==================
 
