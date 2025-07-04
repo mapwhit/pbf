@@ -1,12 +1,18 @@
 check: lint test
 
-lint:
-	./node_modules/.bin/eslint index.js test/*.js bench/bench-tiles.js
-
-test:
-	node --test
-
 bench:
 	node bench/bench.js
 
-.PHONY: check lint test bench cov
+lint:
+	./node_modules/.bin/biome ci
+
+format:
+	./node_modules/.bin/biome check --fix
+
+test:
+	node --test $(TEST_OPTS)
+
+test-cov: TEST_OPTS := --experimental-test-coverage
+test-cov: test
+
+.PHONY: bench check format lint test test-cov

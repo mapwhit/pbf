@@ -9,10 +9,9 @@ const SHIFT_RIGHT_32 = 1 / SHIFT_LEFT_32;
 const TEXT_DECODER_MIN_LENGTH = 12;
 const utf8TextDecoder = typeof TextDecoder === 'undefined' ? null : new TextDecoder('utf-8');
 
-
 class Pbf {
   constructor(buf) {
-    this.buf = ArrayBuffer.isView && ArrayBuffer.isView(buf) ? buf : new Uint8Array(buf || 0);
+    this.buf = ArrayBuffer.isView?.(buf) ? buf : new Uint8Array(buf || 0);
     this.pos = 0;
     this.type = 0;
     this.length = this.buf.length;
@@ -101,7 +100,8 @@ class Pbf {
     return readVarintRemainder(val, isSigned, this);
   }
 
-  readVarint64() { // for compatibility with v2.0.1
+  readVarint64() {
+    // for compatibility with v2.0.1
     return this.readVarint(true);
   }
 
@@ -202,15 +202,22 @@ class Pbf {
   skip(val) {
     const type = val & 0x7;
     switch (type) {
-      case Pbf.Varint: while (this.buf[this.pos++] > 0x7f) { /* skip */ }
+      case Pbf.Varint:
+        while (this.buf[this.pos++] > 0x7f) {
+          /* skip */
+        }
         break;
-      case Pbf.Bytes: this.pos = this.readVarint() + this.pos;
+      case Pbf.Bytes:
+        this.pos = this.readVarint() + this.pos;
         break;
-      case Pbf.Fixed32: this.pos += 4;
+      case Pbf.Fixed32:
+        this.pos += 4;
         break;
-      case Pbf.Fixed64: this.pos += 8;
+      case Pbf.Fixed64:
+        this.pos += 8;
         break;
-      default: assert(false, `Unimplemented type: ${type}`);
+      default:
+        assert(false, `Unimplemented type: ${type}`);
     }
   }
 
@@ -275,7 +282,7 @@ class Pbf {
 
     this.realloc(4);
 
-    this.buf[this.pos++] = val & 0x7f | (val > 0x7f ? 0x80 : 0);
+    this.buf[this.pos++] = (val & 0x7f) | (val > 0x7f ? 0x80 : 0);
     if (val <= 0x7f) return;
     this.buf[this.pos++] = ((val >>>= 7) & 0x7f) | (val > 0x7f ? 0x80 : 0);
     if (val <= 0x7f) return;
@@ -351,15 +358,33 @@ class Pbf {
     this.writeRawMessage(fn, obj);
   }
 
-  writePackedVarint(tag, arr) { if (arr.length) this.writeMessage(tag, writePackedVarint, arr); }
-  writePackedSVarint(tag, arr) { if (arr.length) this.writeMessage(tag, writePackedSVarint, arr); }
-  writePackedBoolean(tag, arr) { if (arr.length) this.writeMessage(tag, writePackedBoolean, arr); }
-  writePackedFloat(tag, arr) { if (arr.length) this.writeMessage(tag, writePackedFloat, arr); }
-  writePackedDouble(tag, arr) { if (arr.length) this.writeMessage(tag, writePackedDouble, arr); }
-  writePackedFixed32(tag, arr) { if (arr.length) this.writeMessage(tag, writePackedFixed32, arr); }
-  writePackedSFixed32(tag, arr) { if (arr.length) this.writeMessage(tag, writePackedSFixed32, arr); }
-  writePackedFixed64(tag, arr) { if (arr.length) this.writeMessage(tag, writePackedFixed64, arr); }
-  writePackedSFixed64(tag, arr) { if (arr.length) this.writeMessage(tag, writePackedSFixed64, arr); }
+  writePackedVarint(tag, arr) {
+    if (arr.length) this.writeMessage(tag, writePackedVarint, arr);
+  }
+  writePackedSVarint(tag, arr) {
+    if (arr.length) this.writeMessage(tag, writePackedSVarint, arr);
+  }
+  writePackedBoolean(tag, arr) {
+    if (arr.length) this.writeMessage(tag, writePackedBoolean, arr);
+  }
+  writePackedFloat(tag, arr) {
+    if (arr.length) this.writeMessage(tag, writePackedFloat, arr);
+  }
+  writePackedDouble(tag, arr) {
+    if (arr.length) this.writeMessage(tag, writePackedDouble, arr);
+  }
+  writePackedFixed32(tag, arr) {
+    if (arr.length) this.writeMessage(tag, writePackedFixed32, arr);
+  }
+  writePackedSFixed32(tag, arr) {
+    if (arr.length) this.writeMessage(tag, writePackedSFixed32, arr);
+  }
+  writePackedFixed64(tag, arr) {
+    if (arr.length) this.writeMessage(tag, writePackedFixed64, arr);
+  }
+  writePackedSFixed64(tag, arr) {
+    if (arr.length) this.writeMessage(tag, writePackedSFixed64, arr);
+  }
 
   writeBytesField(tag, buffer) {
     this.writeTag(tag, Pbf.Bytes);
@@ -449,8 +474,7 @@ function readVarintRemainder(l, s, p) {
 }
 
 function readPackedEnd(pbf) {
-  return pbf.type === Pbf.Bytes ?
-    pbf.readVarint() + pbf.pos : pbf.pos + 1;
+  return pbf.type === Pbf.Bytes ? pbf.readVarint() + pbf.pos : pbf.pos + 1;
 }
 
 function toNum(low, high, isSigned) {
@@ -458,16 +482,13 @@ function toNum(low, high, isSigned) {
     return high * 0x100000000 + (low >>> 0);
   }
 
-  return ((high >>> 0) * 0x100000000) + (low >>> 0);
+  return (high >>> 0) * 0x100000000 + (low >>> 0);
 }
 
 function writeBigVarint(val, pbf) {
   /* global DEBUG */
   if (DEBUG) {
-    assert(
-      val < 0x10000000000000000 && val >= -0x10000000000000000,
-      'Given varint doesn\'t fit into 10 bytes'
-    );
+    assert(val < 0x10000000000000000 && val >= -0x10000000000000000, "Given varint doesn't fit into 10 bytes");
   }
 
   let low;
@@ -494,14 +515,14 @@ function writeBigVarint(val, pbf) {
   writeBigVarintHigh(high, pbf);
 }
 
-function writeBigVarintLow(low, high, pbf) {
-  pbf.buf[pbf.pos++] = low & 0x7f | 0x80;
+function writeBigVarintLow(low, _high, pbf) {
+  pbf.buf[pbf.pos++] = (low & 0x7f) | 0x80;
   low >>>= 7;
-  pbf.buf[pbf.pos++] = low & 0x7f | 0x80;
+  pbf.buf[pbf.pos++] = (low & 0x7f) | 0x80;
   low >>>= 7;
-  pbf.buf[pbf.pos++] = low & 0x7f | 0x80;
+  pbf.buf[pbf.pos++] = (low & 0x7f) | 0x80;
   low >>>= 7;
-  pbf.buf[pbf.pos++] = low & 0x7f | 0x80;
+  pbf.buf[pbf.pos++] = (low & 0x7f) | 0x80;
   low >>>= 7;
   pbf.buf[pbf.pos] = low & 0x7f;
 }
@@ -509,69 +530,79 @@ function writeBigVarintLow(low, high, pbf) {
 function writeBigVarintHigh(high, pbf) {
   const lsb = (high & 0x07) << 4;
 
-  pbf.buf[pbf.pos++] |= lsb | (((high >>>= 3)) ? 0x80 : 0);
+  pbf.buf[pbf.pos++] |= lsb | ((high >>>= 3) ? 0x80 : 0);
   if (!high) return;
-  pbf.buf[pbf.pos++] = high & 0x7f | (((high >>>= 7)) ? 0x80 : 0);
+  pbf.buf[pbf.pos++] = (high & 0x7f) | ((high >>>= 7) ? 0x80 : 0);
   if (!high) return;
-  pbf.buf[pbf.pos++] = high & 0x7f | (((high >>>= 7)) ? 0x80 : 0);
+  pbf.buf[pbf.pos++] = (high & 0x7f) | ((high >>>= 7) ? 0x80 : 0);
   if (!high) return;
-  pbf.buf[pbf.pos++] = high & 0x7f | (((high >>>= 7)) ? 0x80 : 0);
+  pbf.buf[pbf.pos++] = (high & 0x7f) | ((high >>>= 7) ? 0x80 : 0);
   if (!high) return;
-  pbf.buf[pbf.pos++] = high & 0x7f | (((high >>>= 7)) ? 0x80 : 0);
+  pbf.buf[pbf.pos++] = (high & 0x7f) | ((high >>>= 7) ? 0x80 : 0);
   if (!high) return;
   pbf.buf[pbf.pos++] = high & 0x7f;
 }
 
 function makeRoomForExtraLength(startPos, len, pbf) {
   const extraLen =
-    len <= 0x3fff ? 1 :
-      len <= 0x1fffff ? 2 :
-        len <= 0xfffffff ? 3 : Math.floor(Math.log(len) / (Math.LN2 * 7));
+    len <= 0x3fff ? 1 : len <= 0x1fffff ? 2 : len <= 0xfffffff ? 3 : Math.floor(Math.log(len) / (Math.LN2 * 7));
 
   // if 1 byte isn't enough for encoding message length, shift the data to the right
   pbf.realloc(extraLen);
   for (let i = pbf.pos - 1; i >= startPos; i--) pbf.buf[i + extraLen] = pbf.buf[i];
 }
 
-function writePackedVarint(arr, pbf) { for (let i = 0; i < arr.length; i++) pbf.writeVarint(arr[i]); }
+function writePackedVarint(arr, pbf) {
+  for (let i = 0; i < arr.length; i++) pbf.writeVarint(arr[i]);
+}
 
-function writePackedSVarint(arr, pbf) { for (let i = 0; i < arr.length; i++) pbf.writeSVarint(arr[i]); }
+function writePackedSVarint(arr, pbf) {
+  for (let i = 0; i < arr.length; i++) pbf.writeSVarint(arr[i]);
+}
 
-function writePackedFloat(arr, pbf) { for (let i = 0; i < arr.length; i++) pbf.writeFloat(arr[i]); }
+function writePackedFloat(arr, pbf) {
+  for (let i = 0; i < arr.length; i++) pbf.writeFloat(arr[i]);
+}
 
-function writePackedDouble(arr, pbf) { for (let i = 0; i < arr.length; i++) pbf.writeDouble(arr[i]); }
+function writePackedDouble(arr, pbf) {
+  for (let i = 0; i < arr.length; i++) pbf.writeDouble(arr[i]);
+}
 
-function writePackedBoolean(arr, pbf) { for (let i = 0; i < arr.length; i++) pbf.writeBoolean(arr[i]); }
+function writePackedBoolean(arr, pbf) {
+  for (let i = 0; i < arr.length; i++) pbf.writeBoolean(arr[i]);
+}
 
-function writePackedFixed32(arr, pbf) { for (let i = 0; i < arr.length; i++) pbf.writeFixed32(arr[i]); }
+function writePackedFixed32(arr, pbf) {
+  for (let i = 0; i < arr.length; i++) pbf.writeFixed32(arr[i]);
+}
 
-function writePackedSFixed32(arr, pbf) { for (let i = 0; i < arr.length; i++) pbf.writeSFixed32(arr[i]); }
+function writePackedSFixed32(arr, pbf) {
+  for (let i = 0; i < arr.length; i++) pbf.writeSFixed32(arr[i]);
+}
 
-function writePackedFixed64(arr, pbf) { for (let i = 0; i < arr.length; i++) pbf.writeFixed64(arr[i]); }
+function writePackedFixed64(arr, pbf) {
+  for (let i = 0; i < arr.length; i++) pbf.writeFixed64(arr[i]);
+}
 
-function writePackedSFixed64(arr, pbf) { for (let i = 0; i < arr.length; i++) pbf.writeSFixed64(arr[i]); }
+function writePackedSFixed64(arr, pbf) {
+  for (let i = 0; i < arr.length; i++) pbf.writeSFixed64(arr[i]);
+}
 
 // Buffer code below from https://github.com/feross/buffer, MIT-licensed
 
 function readUInt32(buf, pos) {
-  return ((buf[pos]) |
-    (buf[pos + 1] << 8) |
-    (buf[pos + 2] << 16)) +
-    (buf[pos + 3] * 0x1000000);
+  return (buf[pos] | (buf[pos + 1] << 8) | (buf[pos + 2] << 16)) + buf[pos + 3] * 0x1000000;
 }
 
 function writeInt32(buf, val, pos) {
   buf[pos] = val;
-  buf[pos + 1] = (val >>> 8);
-  buf[pos + 2] = (val >>> 16);
-  buf[pos + 3] = (val >>> 24);
+  buf[pos + 1] = val >>> 8;
+  buf[pos + 2] = val >>> 16;
+  buf[pos + 3] = val >>> 24;
 }
 
 function readInt32(buf, pos) {
-  return ((buf[pos]) |
-    (buf[pos + 1] << 8) |
-    (buf[pos + 2] << 16)) +
-    (buf[pos + 3] << 24);
+  return (buf[pos] | (buf[pos + 1] << 8) | (buf[pos + 2] << 16)) + (buf[pos + 3] << 24);
 }
 
 function readUtf8(buf, pos, end) {
@@ -581,10 +612,7 @@ function readUtf8(buf, pos, end) {
   while (i < end) {
     const b0 = buf[i];
     let c = null; // codepoint
-    let bytesPerSequence =
-      b0 > 0xEF ? 4 :
-        b0 > 0xDF ? 3 :
-          b0 > 0xBF ? 2 : 1;
+    let bytesPerSequence = b0 > 0xef ? 4 : b0 > 0xdf ? 3 : b0 > 0xbf ? 2 : 1;
 
     if (i + bytesPerSequence > end) break;
 
@@ -598,18 +626,18 @@ function readUtf8(buf, pos, end) {
       }
     } else if (bytesPerSequence === 2) {
       b1 = buf[i + 1];
-      if ((b1 & 0xC0) === 0x80) {
-        c = (b0 & 0x1F) << 0x6 | (b1 & 0x3F);
-        if (c <= 0x7F) {
+      if ((b1 & 0xc0) === 0x80) {
+        c = ((b0 & 0x1f) << 0x6) | (b1 & 0x3f);
+        if (c <= 0x7f) {
           c = null;
         }
       }
     } else if (bytesPerSequence === 3) {
       b1 = buf[i + 1];
       b2 = buf[i + 2];
-      if ((b1 & 0xC0) === 0x80 && (b2 & 0xC0) === 0x80) {
-        c = (b0 & 0xF) << 0xC | (b1 & 0x3F) << 0x6 | (b2 & 0x3F);
-        if (c <= 0x7FF || (c >= 0xD800 && c <= 0xDFFF)) {
+      if ((b1 & 0xc0) === 0x80 && (b2 & 0xc0) === 0x80) {
+        c = ((b0 & 0xf) << 0xc) | ((b1 & 0x3f) << 0x6) | (b2 & 0x3f);
+        if (c <= 0x7ff || (c >= 0xd800 && c <= 0xdfff)) {
           c = null;
         }
       }
@@ -617,22 +645,21 @@ function readUtf8(buf, pos, end) {
       b1 = buf[i + 1];
       b2 = buf[i + 2];
       b3 = buf[i + 3];
-      if ((b1 & 0xC0) === 0x80 && (b2 & 0xC0) === 0x80 && (b3 & 0xC0) === 0x80) {
-        c = (b0 & 0xF) << 0x12 | (b1 & 0x3F) << 0xC | (b2 & 0x3F) << 0x6 | (b3 & 0x3F);
-        if (c <= 0xFFFF || c >= 0x110000) {
+      if ((b1 & 0xc0) === 0x80 && (b2 & 0xc0) === 0x80 && (b3 & 0xc0) === 0x80) {
+        c = ((b0 & 0xf) << 0x12) | ((b1 & 0x3f) << 0xc) | ((b2 & 0x3f) << 0x6) | (b3 & 0x3f);
+        if (c <= 0xffff || c >= 0x110000) {
           c = null;
         }
       }
     }
 
     if (c === null) {
-      c = 0xFFFD;
+      c = 0xfffd;
       bytesPerSequence = 1;
-
-    } else if (c > 0xFFFF) {
+    } else if (c > 0xffff) {
       c -= 0x10000;
-      str += String.fromCharCode(c >>> 10 & 0x3FF | 0xD800);
-      c = 0xDC00 | c & 0x3FF;
+      str += String.fromCharCode(((c >>> 10) & 0x3ff) | 0xd800);
+      c = 0xdc00 | (c & 0x3ff);
     }
 
     str += String.fromCharCode(c);
@@ -650,32 +677,31 @@ function writeUtf8(buf, str, pos) {
   for (let i = 0, c, lead; i < str.length; i++) {
     c = str.charCodeAt(i); // code point
 
-    if (c > 0xD7FF && c < 0xE000) {
+    if (c > 0xd7ff && c < 0xe000) {
       if (lead) {
-        if (c < 0xDC00) {
-          buf[pos++] = 0xEF;
-          buf[pos++] = 0xBF;
-          buf[pos++] = 0xBD;
+        if (c < 0xdc00) {
+          buf[pos++] = 0xef;
+          buf[pos++] = 0xbf;
+          buf[pos++] = 0xbd;
           lead = c;
           continue;
-        } else {
-          c = lead - 0xD800 << 10 | c - 0xDC00 | 0x10000;
-          lead = null;
         }
+        c = ((lead - 0xd800) << 10) | (c - 0xdc00) | 0x10000;
+        lead = null;
       } else {
-        if (c > 0xDBFF || (i + 1 === str.length)) {
-          buf[pos++] = 0xEF;
-          buf[pos++] = 0xBF;
-          buf[pos++] = 0xBD;
+        if (c > 0xdbff || i + 1 === str.length) {
+          buf[pos++] = 0xef;
+          buf[pos++] = 0xbf;
+          buf[pos++] = 0xbd;
         } else {
           lead = c;
         }
         continue;
       }
     } else if (lead) {
-      buf[pos++] = 0xEF;
-      buf[pos++] = 0xBF;
-      buf[pos++] = 0xBD;
+      buf[pos++] = 0xef;
+      buf[pos++] = 0xbf;
+      buf[pos++] = 0xbd;
       lead = null;
     }
 
@@ -683,17 +709,17 @@ function writeUtf8(buf, str, pos) {
       buf[pos++] = c;
     } else {
       if (c < 0x800) {
-        buf[pos++] = c >> 0x6 | 0xC0;
+        buf[pos++] = (c >> 0x6) | 0xc0;
       } else {
         if (c < 0x10000) {
-          buf[pos++] = c >> 0xC | 0xE0;
+          buf[pos++] = (c >> 0xc) | 0xe0;
         } else {
-          buf[pos++] = c >> 0x12 | 0xF0;
-          buf[pos++] = c >> 0xC & 0x3F | 0x80;
+          buf[pos++] = (c >> 0x12) | 0xf0;
+          buf[pos++] = ((c >> 0xc) & 0x3f) | 0x80;
         }
-        buf[pos++] = c >> 0x6 & 0x3F | 0x80;
+        buf[pos++] = ((c >> 0x6) & 0x3f) | 0x80;
       }
-      buf[pos++] = c & 0x3F | 0x80;
+      buf[pos++] = (c & 0x3f) | 0x80;
     }
   }
   return pos;

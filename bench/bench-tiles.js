@@ -1,12 +1,10 @@
-'use strict';
-
 const runStats = require('tile-stats-runner');
 const Tile = require('./vector_tile').Tile;
 const Pbf = require('../');
 
 const ids = 'mapbox.mapbox-streets-v7';
 const token = 'pk.eyJ1IjoicmVkdWNlciIsImEiOiJrS3k2czVJIn0.CjwU0V9fO4FAf3ukyV4eqQ';
-const url = 'https://b.tiles.mapbox.com/v4/' + ids + '/{z}/{x}/{y}.vector.pbf?access_token=' + token;
+const url = `https://b.tiles.mapbox.com/v4/${ids}/{z}/{x}/{y}.vector.pbf?access_token=${token}`;
 
 let readTime = 0;
 let writeTime = 0;
@@ -45,7 +43,7 @@ function showStats() {
 }
 
 function speed(time, size) {
-  return Math.round((size / (1 << 20)) / (time / 1000));
+  return Math.round(size / (1 << 20) / (time / 1000));
 }
 
 function clock(start) {
