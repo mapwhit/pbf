@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.0.5/schema.json",
+  "$schema": "node_modules/@biomejs/biome/configuration_schema.json",
   "assist": {
     "actions": {
       "source": {
@@ -25,10 +25,7 @@
       "quoteStyle": "single",
       "trailingCommas": "none",
       "arrowParentheses": "asNeeded"
-    },
-    "globals": [
-      "DEBUG"
-    ]
+    }
   },
   "json": {
     "formatter": {

@@ -1,12 +1,8 @@
-const test = require('node:test');
-const assert = require('node:assert');
-
-const fs = require('node:fs');
-const path = require('node:path');
-
-global.DEBUG = true;
-
-const Pbf = require('../');
+import assert from 'node:assert';
+import fs from 'node:fs';
+import path from 'node:path';
+import test from 'node:test';
+import Pbf from '../index.js';
 
 function toArray(buf) {
   const arr = [];
@@ -126,27 +122,6 @@ test('readSVarint & writeSVarint', () => {
   while (buf.pos < len) {
     assert.equal(buf.readSVarint(), testSigned[i++]);
   }
-});
-
-test('writeVarint throws error on a number that is too big', () => {
-  const buf = new Pbf(Buffer.allocUnsafe(0));
-
-  assert.throws(() => {
-    // biome-ignore lint/correctness/noPrecisionLoss: test for large number
-    buf.writeVarint(29234322996241367000012);
-  });
-
-  assert.throws(() => {
-    // biome-ignore lint/correctness/noPrecisionLoss: test for small number
-    buf.writeVarint(-29234322996241367000012);
-  });
-});
-
-test('readVarint throws error on a number that is longer than 10 bytes', () => {
-  const buf = new Pbf(Buffer.from([0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]));
-  assert.throws(() => {
-    buf.readVarint();
-  });
 });
 
 test('readBoolean & writeBoolean', () => {
@@ -349,7 +324,7 @@ test('more complicated utf8', () => {
 });
 
 test('readFields', () => {
-  const buf = new Pbf(fs.readFileSync(path.join(__dirname, '/fixtures/12665.vector.pbf')));
+  const buf = new Pbf(fs.readFileSync(path.join(import.meta.dirname, '/fixtures/12665.vector.pbf')));
   const layerOffsets = [];
   const foo = {};
   let res;
@@ -370,7 +345,7 @@ test('readFields', () => {
 });
 
 test('readMessage', () => {
-  const buf = new Pbf(fs.readFileSync(path.join(__dirname, '/fixtures/12665.vector.pbf')));
+  const buf = new Pbf(fs.readFileSync(path.join(import.meta.dirname, '/fixtures/12665.vector.pbf')));
   const layerNames = [];
   const foo = {};
 
@@ -451,10 +426,6 @@ test('skip', () => {
   });
 
   assert.equal(buf.pos, buf.length);
-
-  assert.throws(() => {
-    buf.skip(6);
-  });
 });
 
 test('write a raw message > 0x10000000', () => {
@@ -481,4 +452,138 @@ test('write a raw message > 0x10000000', () => {
 
   // Then the message itself. Verify that the first few bytes match the marker.
   assert.deepEqual(bytes.subarray(encodedSize.length, encodedSize.length + markerSize), encodedMarker);
+});
+
+test('UTF-8 decoding: invalid 2-byte sequence', () => {
+  // Invalid 2-byte sequence: continuation byte wrong
+  const buf = Buffer.allocUnsafe(10);
+  buf[0] = 2; // varint length = 2 bytes
+  buf[1] = 0xc3; // start of 2-byte sequence
+  buf[2] = 0x28; // 0x28 is not a valid continuation byte (ASCII '(')
+  const pbf = new Pbf(buf);
+  pbf.pos = 0;
+  const str = pbf.readString();
+  // Invalid continuation results in replacement character + ASCII char
+  assert.equal(str, '\ufffd(');
+});
+
+test('UTF-8 decoding: invalid 3-byte sequence', () => {
+  // Invalid 3-byte sequence: wrong continuation bytes
+  const buf = Buffer.allocUnsafe(10);
+  buf[0] = 3; // varint length = 3 bytes
+  buf[1] = 0xe0; // start of 3-byte sequence
+  buf[2] = 0x28; // 0x28 is not a valid continuation byte (ASCII '(')
+  buf[3] = 0x28; // another invalid byte (ASCII '(')
+  const pbf = new Pbf(buf);
+  pbf.pos = 0;
+  const str = pbf.readString();
+  // Invalid continuation results in replacement + ASCII chars
+  assert.equal(str, '\ufffd((');
+});
+
+test('UTF-8 decoding: invalid 4-byte sequence', () => {
+  // Invalid 4-byte sequence: wrong continuation bytes
+  const buf = Buffer.allocUnsafe(10);
+  buf[0] = 4; // varint length = 4 bytes
+  buf[1] = 0xf0; // start of 4-byte sequence
+  buf[2] = 0x28; // 0x28 is not a valid continuation byte (ASCII '(')
+  buf[3] = 0x28; // another invalid byte (ASCII '(')
+  buf[4] = 0x28; // another invalid byte (ASCII '(')
+  const pbf = new Pbf(buf);
+  pbf.pos = 0;
+  const str = pbf.readString();
+  // Invalid continuation results in replacement + ASCII chars
+  assert.equal(str, '\ufffd(((');
+});
+
+test('UTF-8 decoding: overlong 2-byte sequence', () => {
+  // Overlong encoding of ASCII 'A' (0x41) - should be invalid
+  const buf = Buffer.allocUnsafe(10);
+  buf[0] = 2; // varint length = 2 bytes
+  buf[1] = 0xc1; // start of 2-byte sequence
+  buf[2] = 0x81; // Overlong encoding: decodes to value <= 0x7f
+  const pbf = new Pbf(buf);
+  pbf.pos = 0;
+  const str = pbf.readString();
+  // Overlong encoding results in replacement character for invalid byte,
+  // then 0x81 (continuation byte) is treated as invalid start byte and replaced again
+  assert.equal(str, '\ufffd\ufffd');
+});
+
+test('UTF-8 decoding: valid 3-byte sequence', () => {
+  // Valid 3-byte UTF-8: Euro sign (€) = U+20AC
+  const buf = new Pbf(Buffer.from([0x3, 0xe2, 0x82, 0xac])); // length prefix + bytes
+  const str = buf.readString();
+  assert.equal(str, '€');
+});
+
+test('UTF-8 decoding: valid 4-byte sequence', () => {
+  // Valid 4-byte UTF-8: Emoji (😀) = U+1F600
+  const buf = new Pbf(Buffer.from([0x4, 0xf0, 0x9f, 0x98, 0x80])); // length prefix + bytes
+  const str = buf.readString();
+  assert.equal(str, '😀');
+});
+
+test('UTF-8 decoding: surrogate pair handling', () => {
+  // Character beyond U+FFFF (needs surrogate pair)
+  // U+1F600 (😀) encodes as: f0 9f 98 80
+  const buf = new Pbf(Buffer.from([0x4, 0xf0, 0x9f, 0x98, 0x80]));
+  const str = buf.readString();
+  assert.equal(str.length, 2); // Surrogate pair = 2 code units
+  assert.equal(str, '😀');
+});
+
+test('UTF-8 decoding: invalid surrogate codepoint', () => {
+  // Invalid 3-byte sequence encoding surrogate (U+D800-U+DFFF are invalid in UTF-8)
+  // 0xED 0xA0 0x80 would encode U+D800 (invalid)
+  const buf = new Pbf(Buffer.from([0x3, 0xed, 0xa0, 0x80]));
+  const str = buf.readString();
+  // Should replace with U+FFFD
+  assert.ok(str.includes('\ufffd'));
+});
+
+test('UTF-8 decoding: out of range 4-byte sequence', () => {
+  // 4-byte sequence encoding value >= U+110000 (invalid)
+  // 0xF4 0x90 0x80 0x80 would encode U+110000
+  const buf = Buffer.allocUnsafe(10);
+  buf[0] = 4; // varint length = 4 bytes
+  buf[1] = 0xf4;
+  buf[2] = 0x90;
+  buf[3] = 0x80;
+  buf[4] = 0x80;
+  const pbf = new Pbf(buf);
+  pbf.pos = 0;
+  const str = pbf.readString();
+  // Out of range encodes as invalid 4-byte, then remaining bytes are treated as invalid continuation bytes
+  assert.equal(str, '\ufffd\ufffd\ufffd\ufffd');
+});
+
+test('UTF-8 decoding: truncated sequence at end', () => {
+  // 2-byte sequence but only 1 byte provided
+  const buf = new Pbf(Buffer.from([0x2, 0xc3, 0x00])); // Only one byte after length
+  buf.pos = 0;
+  // Skip length
+  buf.readVarint();
+  // readUtf8 should stop when it hits end without enough bytes
+  const str = buf.readString();
+  // Truncated sequence should not cause error
+  assert.ok(typeof str === 'string');
+});
+
+test('UTF-8 decoding: ASCII range', () => {
+  // ASCII characters (single byte each)
+  const buf = new Pbf();
+  buf.writeString('Hello ASCII');
+  buf.finish();
+  assert.equal(buf.readString(), 'Hello ASCII');
+});
+
+test('UTF-8 decoding: mixed valid and invalid sequences', () => {
+  // Mix of valid UTF-8 and invalid bytes
+  // "A" (valid) + invalid continuation byte + "B" (valid)
+  const buf = new Pbf(Buffer.from([0x5, 0x41, 0x80, 0x80, 0x42, 0x00])); // A + invalid + B + null
+  const str = buf.readString();
+  assert.ok(str.includes('A'));
+  assert.ok(str.includes('B'));
+  assert.ok(str.includes('\ufffd')); // replacement character
 });

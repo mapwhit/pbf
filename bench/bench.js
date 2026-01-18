@@ -1,16 +1,20 @@
-const Benchmark = require('benchmark');
-const fs = require('node:fs');
-const path = require('node:path');
-const protocolBuffers = require('protocol-buffers');
-const protobufjs = require('protobufjs');
-const vt = require('./vector_tile');
-const Pbf = require('../');
+import fs from 'node:fs';
+import path from 'node:path';
+import Benchmark from 'benchmark';
+import protobufjs from 'protobufjs';
+import protocolBuffers from 'protocol-buffers';
+import Pbf from '../index.js';
+import { Tile } from './vector_tile.js';
 
-const { read: pbfReadTile, write: pbfWriteTile } = vt.Tile;
-const data = fs.readFileSync(path.resolve(__dirname, '../test/fixtures/12665.vector.pbf'));
-const ProtocolBuffersTile = protocolBuffers(fs.readFileSync(path.resolve(__dirname, 'vector_tile.proto'))).Tile;
+const { read: pbfReadTile, write: pbfWriteTile } = Tile;
+const data = fs.readFileSync(path.resolve(import.meta.dirname, '../test/fixtures/12665.vector.pbf'));
+const ProtocolBuffersTile = protocolBuffers(
+  fs.readFileSync(path.resolve(import.meta.dirname, 'vector_tile.proto'))
+).Tile;
 
-const ProtobufjsTile = protobufjs.loadSync(path.resolve(__dirname, 'vector_tile.proto')).lookup('vector_tile.Tile');
+const ProtobufjsTile = protobufjs
+  .loadSync(path.resolve(import.meta.dirname, 'vector_tile.proto'))
+  .lookup('vector_tile.Tile');
 
 const pbfTile = pbfReadTile(new Pbf(data));
 const tileJSON = JSON.stringify(pbfTile);

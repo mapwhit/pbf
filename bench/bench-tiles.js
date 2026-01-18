@@ -1,10 +1,8 @@
-const runStats = require('tile-stats-runner');
-const Tile = require('./vector_tile').Tile;
-const Pbf = require('../');
+import runStats from 'tile-stats-runner';
+import Pbf from '../index.js';
+import { Tile } from './vector_tile.js';
 
-const ids = 'mapbox.mapbox-streets-v7';
-const token = 'pk.eyJ1IjoicmVkdWNlciIsImEiOiJrS3k2czVJIn0.CjwU0V9fO4FAf3ukyV4eqQ';
-const url = `https://b.tiles.mapbox.com/v4/${ids}/{z}/{x}/{y}.vector.pbf?access_token=${token}`;
+const url = 'https://tiles.openfreemap.org/planet/latest/{z}/{x}/{y}.pbf';
 
 let readTime = 0;
 let writeTime = 0;
