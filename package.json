@@ -35,7 +35,7 @@
     "ieee754": "^1.1.12"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.0.5",
+    "@biomejs/biome": "2.3.11",
     "benchmark": "^2.1.4",
     "protobufjs": "~7",
     "protocol-buffers": "~5",
