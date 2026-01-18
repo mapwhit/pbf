@@ -1,4 +1,13 @@
 
+2.0.0 / 2026-01-18
+==================
+
+ * update `protobufjs` to 8.0.0
+ * upgrade `biome` to 2.3.11
+ * use `openfreemap.org` tiles for benchmark
+ * remove assertions
+ * transition to ESM format
+
 1.0.3 / 2025-07-04
 ==================
 
