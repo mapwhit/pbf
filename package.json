@@ -37,7 +37,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.3.11",
     "benchmark": "^2.1.4",
-    "protobufjs": "~7",
+    "protobufjs": "~8.0.0",
     "protocol-buffers": "~5",
     "tile-stats-runner": "^1.0.0"
   }
