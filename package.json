@@ -2,7 +2,8 @@
   "name": "@mapwhit/pbf",
   "version": "1.0.3",
   "description": "a low-level, lightweight protocol buffers implementation in JavaScript",
-  "main": "index.js",
+  "exports": "./index.js",
+  "type": "module",
   "scripts": {
     "test": "make check"
   },

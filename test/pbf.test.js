@@ -1,12 +1,10 @@
-const test = require('node:test');
-const assert = require('node:assert');
-
-const fs = require('node:fs');
-const path = require('node:path');
+import assert from 'node:assert';
+import fs from 'node:fs';
+import path from 'node:path';
+import test from 'node:test';
+import Pbf from '../index.js';
 
 global.DEBUG = true;
-
-const Pbf = require('../');
 
 function toArray(buf) {
   const arr = [];
@@ -349,7 +347,7 @@ test('more complicated utf8', () => {
 });
 
 test('readFields', () => {
-  const buf = new Pbf(fs.readFileSync(path.join(__dirname, '/fixtures/12665.vector.pbf')));
+  const buf = new Pbf(fs.readFileSync(path.join(import.meta.dirname, '/fixtures/12665.vector.pbf')));
   const layerOffsets = [];
   const foo = {};
   let res;
@@ -370,7 +368,7 @@ test('readFields', () => {
 });
 
 test('readMessage', () => {
-  const buf = new Pbf(fs.readFileSync(path.join(__dirname, '/fixtures/12665.vector.pbf')));
+  const buf = new Pbf(fs.readFileSync(path.join(import.meta.dirname, '/fixtures/12665.vector.pbf')));
   const layerNames = [];
   const foo = {};
 

@@ -1,6 +1,6 @@
-const runStats = require('tile-stats-runner');
-const Tile = require('./vector_tile').Tile;
-const Pbf = require('../');
+import runStats from 'tile-stats-runner';
+import Pbf from '../index.js';
+import { Tile } from './vector_tile.js';
 
 const ids = 'mapbox.mapbox-streets-v7';
 const token = 'pk.eyJ1IjoicmVkdWNlciIsImEiOiJrS3k2czVJIn0.CjwU0V9fO4FAf3ukyV4eqQ';

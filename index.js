@@ -1,5 +1,5 @@
-const assert = require('assert');
-const ieee754 = require('ieee754');
+import assert from 'assert';
+import ieee754 from 'ieee754';
 
 const SHIFT_LEFT_32 = (1 << 16) * (1 << 16);
 const SHIFT_RIGHT_32 = 1 / SHIFT_LEFT_32;
@@ -446,7 +446,7 @@ Pbf.Fixed64 = 1; // 64-bit: double, fixed64, sfixed64
 Pbf.Bytes = 2; // length-delimited: string, bytes, embedded messages, packed repeated fields
 Pbf.Fixed32 = 5; // 32-bit: float, fixed32, sfixed32
 
-module.exports = Pbf;
+export default Pbf;
 
 function readVarintRemainder(l, s, p) {
   const { buf } = p;
