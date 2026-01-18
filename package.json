@@ -32,7 +32,6 @@
   },
   "homepage": "https://github.com/mapbox/pbf",
   "dependencies": {
-    "@pirxpilot/nanoassert": "~1",
     "ieee754": "^1.1.12"
   },
   "devDependencies": {
@@ -41,8 +40,5 @@
     "protobufjs": "~7",
     "protocol-buffers": "~5",
     "tile-stats-runner": "^1.0.0"
-  },
-  "browser": {
-    "assert": "@pirxpilot/nanoassert"
   }
 }

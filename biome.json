@@ -25,10 +25,7 @@
       "quoteStyle": "single",
       "trailingCommas": "none",
       "arrowParentheses": "asNeeded"
-    },
-    "globals": [
-      "DEBUG"
-    ]
+    }
   },
   "json": {
     "formatter": {

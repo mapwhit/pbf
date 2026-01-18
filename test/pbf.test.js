@@ -4,8 +4,6 @@ import path from 'node:path';
 import test from 'node:test';
 import Pbf from '../index.js';
 
-global.DEBUG = true;
-
 function toArray(buf) {
   const arr = [];
   for (let i = 0; i < buf.length; i++) {
@@ -124,27 +122,6 @@ test('readSVarint & writeSVarint', () => {
   while (buf.pos < len) {
     assert.equal(buf.readSVarint(), testSigned[i++]);
   }
-});
-
-test('writeVarint throws error on a number that is too big', () => {
-  const buf = new Pbf(Buffer.allocUnsafe(0));
-
-  assert.throws(() => {
-    // biome-ignore lint/correctness/noPrecisionLoss: test for large number
-    buf.writeVarint(29234322996241367000012);
-  });
-
-  assert.throws(() => {
-    // biome-ignore lint/correctness/noPrecisionLoss: test for small number
-    buf.writeVarint(-29234322996241367000012);
-  });
-});
-
-test('readVarint throws error on a number that is longer than 10 bytes', () => {
-  const buf = new Pbf(Buffer.from([0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]));
-  assert.throws(() => {
-    buf.readVarint();
-  });
 });
 
 test('readBoolean & writeBoolean', () => {
@@ -449,10 +426,6 @@ test('skip', () => {
   });
 
   assert.equal(buf.pos, buf.length);
-
-  assert.throws(() => {
-    buf.skip(6);
-  });
 });
 
 test('write a raw message > 0x10000000', () => {
